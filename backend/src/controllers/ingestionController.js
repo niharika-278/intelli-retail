@@ -2,8 +2,7 @@ import multer from 'multer';
 import { parse } from 'csv-parse/sync';
 import { transaction } from '../config/db.js';
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
-
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
 export const uploadMiddleware = upload.single('file');
 
 function parseCsv(buffer) {
@@ -55,8 +54,8 @@ export async function ingestCustomers(req, res) {
     await transaction(async (conn) => {
       for (const r of toInsert) {
         await conn.execute(
-          'INSERT INTO Customers (unique_id, name, phone, email, zip_code, city, state) VALUES (?, ?, ?, ?, ?, ?, ?)',
-          [r.unique_id, r.name, r.phone, r.email, r.zip_code, r.city, r.state]
+          'INSERT INTO Customers (unique_id, name, email, zip_code, city, state) VALUES (?, ?, ?, ?, ?, ?)',
+          [r.unique_id, r.name, r.email, r.zip_code, r.city, r.state]
         );
         processed++;
       }
@@ -138,8 +137,8 @@ export async function ingestProducts(req, res) {
       }
       for (const r of toInsert) {
         await conn.execute(
-          'INSERT INTO Products (name, category_id, price, expiry_date) VALUES (?, ?, ?, ?)',
-          [r.name, catIds[r.categoryName], r.price, r.expiry_date]
+          'INSERT INTO Products (name, category_id, expiry_date) VALUES (?, ?, ?)',
+          [r.name, catIds[r.categoryName], r.expiry_date]
         );
         processed++;
       }

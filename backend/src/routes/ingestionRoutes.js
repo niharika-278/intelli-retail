@@ -16,6 +16,6 @@ router.use(requireRole('admin', 'seller'));
 router.post('/customers', uploadMiddleware, ingestCustomers);
 router.post('/products', uploadMiddleware, ingestProducts);
 router.post('/inventory', uploadMiddleware, ingestInventory);
-router.post('/sales', uploadMiddleware, ingestSales);
+router.post('/sales', uploadMiddleware, ingestSales); 
 
 export default router;

@@ -13,7 +13,6 @@ router.get('/customers', checkoutController.getCustomers);
 router.get('/customers/search', checkoutController.searchCustomers);
 const customerValidations = [
   body('name').trim().notEmpty().withMessage('Name required'),
-  body('phone').optional().trim(),
   body('email').optional().isEmail().trim(),
   body('zip_code').optional().trim(),
   body('city').optional().trim(),

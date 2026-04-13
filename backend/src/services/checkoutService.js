@@ -13,8 +13,18 @@ export async function placeOrder(conn, { customerId, items, sellerId }) {
     if (!row || row.stock < item.quantity) {
       throw new Error(`Insufficient stock for product ${item.productId}`);
     }
-    const [prod] = await conn.execute('SELECT price FROM Products WHERE id = ?', [item.productId]);
-    const price = Number(prod?.[0]?.price ?? 0);
+    let price = Number(item.unitPrice);
+    if (!Number.isFinite(price) || price < 0) {
+      const [lastPriceRows] = await conn.execute(
+        `SELECT price
+         FROM Order_Items
+         WHERE product_id = ? AND seller_id = ?
+         ORDER BY id DESC
+         LIMIT 1`,
+        [item.productId, sellerId]
+      );
+      price = Number(lastPriceRows?.[0]?.price ?? 0);
+    }
     const lineTotal = price * item.quantity;
     totalAmount += lineTotal;
     orderItems.push({ productId: item.productId, quantity: item.quantity, price });

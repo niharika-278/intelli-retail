@@ -1,4 +1,4 @@
-# Retail Inventory & Sales – API Reference
+# CB&DFS – API Reference
 
 Base URL: `http://localhost:5000/api` (or your backend URL).
 

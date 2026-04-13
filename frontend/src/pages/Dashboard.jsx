@@ -25,6 +25,23 @@ const KPI_CARDS = [
 
 const COLORS = ['#22c55e', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#64748b'];
 
+function EmptyChart({ message = 'No data available' }) {
+  return (
+    <div className="h-80 flex flex-col items-center justify-center text-surface-400 gap-2">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+      <p className="text-sm">{message}</p>
+    </div>
+  );
+}
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return dateStr;
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+};
+
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -88,7 +105,10 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl border border-surface-200 shadow-card p-5">
           <h2 className="text-lg font-semibold text-surface-900 mb-4">Popular categories</h2>
-          <div className="h-80">
+          {(!popularCategories || popularCategories.length === 0) ? (
+            <EmptyChart message="No category sales data yet" />
+          ) : (
+          <div className="h-80 w-full overflow-hidden" >
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -98,7 +118,7 @@ export default function Dashboard() {
                   cx="50%"
                   cy="50%"
                   outerRadius={100}
-                  label={({ name, total }) => `${name}: ₹${Number(total).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`}
+                  label={({ name, total }) => name}
                 >
                   {(popularCategories || []).map((_, i) => (
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
@@ -108,37 +128,46 @@ export default function Dashboard() {
               </PieChart>
             </ResponsiveContainer>
           </div>
+          )}
         </div>
 
         <div className="bg-white rounded-xl border border-surface-200 shadow-card p-5">
-          <h2 className="text-lg font-semibold text-surface-900 mb-4">Sales by day (last 30 days)</h2>
-          <div className="h-80">
+          <h2 className="text-lg font-semibold text-surface-900 mb-4">Sales by day (last 90 days)</h2>
+          {(!salesByDay || salesByDay.length === 0) ? (
+            <EmptyChart message="No sales in the last 30 days" />
+          ) : (
+          <div className="h-80 w-full overflow-hidden">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={salesByDay || []} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}`} />
-                <Tooltip formatter={(v) => [`₹${Number(v).toLocaleString('en-IN')}`, 'Amount']} labelFormatter={(v) => `Date: ${v}`} />
+                <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDate} interval={4} />
+                <YAxis domain={[0, 15000]}tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}`} />
+                <Tooltip formatter={(v) => [`₹${Number(v).toLocaleString('en-IN')}`, 'Amount']} labelFormatter={(v) => `Date: ${formatDate(v)}`} />
                 <Bar dataKey="amount" fill="#22c55e" radius={[4, 4, 0, 0]} name="Sales" />
               </BarChart>
             </ResponsiveContainer>
           </div>
+          )}
         </div>
       </div>
 
       <div className="bg-white rounded-xl border border-surface-200 shadow-card p-5">
-        <h2 className="text-lg font-semibold text-surface-900 mb-4">Revenue trend (last 90 days)</h2>
-        <div className="h-80">
+        <h2 className="text-lg font-semibold text-surface-900 mb-4">Revenue trend</h2>
+        {(!revenueTrend || revenueTrend.length === 0) ? (
+          <EmptyChart message="No revenue data in the last 90 days" />
+        ) : (
+        <div className="h-80 w-full overflow-hidden">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={revenueTrend || []} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+            <LineChart data={revenueTrend || []} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
-              <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}`} />
-              <Tooltip formatter={(v) => [`₹${Number(v).toLocaleString('en-IN')}`, 'Revenue']} labelFormatter={(v) => `Date: ${v}`} />
+              <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDate} />
+              <YAxis domain={[0, 15000]} tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}`} />
+              <Tooltip formatter={(v) => [`₹${Number(v).toLocaleString('en-IN')}`, 'Revenue']} labelFormatter={(v) => `Date: ${formatDate(v)}`} />
               <Line type="monotone" dataKey="revenue" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }} name="Revenue" />
             </LineChart>
           </ResponsiveContainer>
         </div>
+        )}
       </div>
     </div>
   );

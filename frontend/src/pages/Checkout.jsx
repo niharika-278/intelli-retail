@@ -6,7 +6,6 @@ const TAX_RATE = 0.05;
 
 function AddCustomerModal({ onClose, onAdded }) {
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [zip_code, setZip_code] = useState('');
   const [city, setCity] = useState('');
@@ -22,7 +21,6 @@ function AddCustomerModal({ onClose, onAdded }) {
     try {
       const { data } = await checkoutApi.createCustomer({
         name: name.trim(),
-        phone: phone.trim() || undefined,
         email: email.trim() || undefined,
         zip_code: zip_code.trim() || undefined,
         city: city.trim() || undefined,
@@ -52,15 +50,7 @@ function AddCustomerModal({ onClose, onAdded }) {
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-surface-700 mb-1">Phone</label>
-            <input
-              type="text"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-3 py-2 border border-surface-200 rounded-lg focus:ring-2 focus:ring-primary-500/30"
-            />
-          </div>
+    
           <div>
             <label className="block text-sm font-medium text-surface-700 mb-1">Email</label>
             <input
@@ -141,7 +131,11 @@ export default function Checkout() {
   useEffect(() => {
     const q = productSearch.trim();
     setLoadingProducts(true);
-    checkoutApi.getProducts(q).then((res) => setProducts(res.data.data || [])).finally(() => setLoadingProducts(false));
+    checkoutApi.getProducts(q).then((res) => setProducts(res.data.data || [])).catch((err) => {
+    console.error("Products fetch failed:", err);
+    showToast("Failed to load products", "error");
+    setProducts([]);
+  }).finally(() => setLoadingProducts(false));
   }, [productSearch]);
 
   const addToCart = (product, qty = 1) => {
@@ -158,7 +152,7 @@ export default function Checkout() {
         return prev;
       }
       if (existing) return prev.map((c) => (c.id === product.id ? { ...c, quantity: newQty } : c));
-      return [...prev, { ...product, quantity: qty }];
+      return [...prev, { ...product, price: Number(product.price ?? product.latest_price ?? 0), quantity: qty }];
     });
   };
 
@@ -195,7 +189,7 @@ export default function Checkout() {
     try {
       await checkoutApi.createOrder({
         customerId: selectedCustomer.id,
-        items: cart.map((c) => ({ productId: c.id, quantity: c.quantity })),
+        items: cart.map((c) => ({ productId: c.id, quantity: c.quantity, price: c.price  })),
       });
       showToast('Order placed successfully', 'success');
       setCart([]);
@@ -224,7 +218,7 @@ export default function Checkout() {
                 value={customerSearch}
                 onChange={(e) => { setCustomerSearch(e.target.value); searchCustomers(e.target.value); }}
                 onFocus={() => searchCustomers(customerSearch)}
-                placeholder="Search by name, email, phone"
+                placeholder="Search by name, email"
                 className="flex-1 px-3 py-2 border border-surface-200 rounded-lg focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500"
               />
               <button
@@ -241,7 +235,7 @@ export default function Checkout() {
               </p>
             )}
             <ul className="mt-2 max-h-40 overflow-y-auto border border-surface-100 rounded-lg divide-y divide-surface-100">
-              {customers.slice(0, 10).map((c) => (
+              {customers.map((c) => (
                 <li
                   key={c.id}
                   onClick={() => { setSelectedCustomer(c); setCustomerSearch(''); setCustomers([]); }}
@@ -270,7 +264,7 @@ export default function Checkout() {
                 {products.map((p) => (
                   <li key={p.id} className="flex items-center justify-between py-2 border-b border-surface-100 last:border-0">
                     <span className="text-sm text-surface-800">{p.name}</span>
-                    <span className="text-sm text-surface-500">Stock: {p.stock ?? 0} · ₹{Number(p.price).toFixed(2)}</span>
+                    <span className="text-sm text-surface-500">Stock: {p.stock ?? 0} · ₹{Number(p.price ?? 0).toFixed(2)}</span>
                     <button
                       type="button"
                       onClick={() => addToCart(p)}
@@ -299,7 +293,7 @@ export default function Checkout() {
                   <button type="button" onClick={() => updateCartQty(c.id, 1)} className="w-6 h-6 rounded border border-surface-200 hover:bg-surface-100">+</button>
                   <button type="button" onClick={() => removeFromCart(c.id)} className="text-red-600 hover:underline">Remove</button>
                 </div>
-                <span>₹{(Number(c.price) * c.quantity).toFixed(2)}</span>
+                <span>₹{(Number(c.price ?? 0) * c.quantity).toFixed(2)}</span>
               </li>
             ))}
             {cart.length === 0 && <li className="text-surface-400">Cart is empty</li>}

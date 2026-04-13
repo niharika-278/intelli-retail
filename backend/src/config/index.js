@@ -11,3 +11,4 @@ export default {
   bcryptRounds: Number(process.env.BCRYPT_ROUNDS) || 10,
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
 };
+                                                                                                                  
