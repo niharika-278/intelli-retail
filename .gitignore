@@ -14,3 +14,4 @@ dist/
 build/
 
 README.md
+*.csv
