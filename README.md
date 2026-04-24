@@ -10,6 +10,20 @@ Role-based retail management platform with JWT auth, inventory, checkout, CSV in
 - **Database:** MySQL
 - **Auth:** JWT, bcrypt, role-based (Admin / Seller)
 
+## Images
+### Sign-in Page
+<img width="624" height="688" alt="image" src="https://github.com/user-attachments/assets/d2a7a5e9-e7f0-4d5c-ae89-769b65f11e21" />
+
+### Dashboard
+<img width="817" height="490" alt="image" src="https://github.com/user-attachments/assets/98889387-2053-4d1d-9f7e-0ddc99a29708" />
+<img width="978" height="552" alt="image" src="https://github.com/user-attachments/assets/6fa1e695-a940-47fa-9417-b188426252b3" />
+
+### Checkout Page
+<img width="669" height="790" alt="image" src="https://github.com/user-attachments/assets/2d18f8da-b7f9-451d-9894-de6f8b32e0f9" />
+
+### Data Ingestion Page
+<img width="980" height="414" alt="image" src="https://github.com/user-attachments/assets/bb310f82-24fa-4ddc-8a2f-8d051e9dc372" />
+
 ## Project structure
 ```
 pbl_project/
@@ -101,7 +115,6 @@ See [docs/API.md](docs/API.md) for full endpoint list and request/response shape
 - JWT for sessions; protected and role-checked routes
 - Input validation (express-validator)
 - Prepared statements for MySQL (SQL injection protection)
-
 
 ## NEXT MODULES
  
