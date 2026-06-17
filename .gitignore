@@ -7,11 +7,9 @@ logs/
 
 # Environment variables
 .env
-.env.example
 
 # Build folders
 dist/
 build/
 
-README.md
 *.csv
