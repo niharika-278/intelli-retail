@@ -1,4 +1,4 @@
-# pbl_project
+
 # Consumer Behaviour & Demand Forecasting System
 
 Role-based retail management platform with JWT auth, inventory, checkout, CSV ingestion, and analytics.
