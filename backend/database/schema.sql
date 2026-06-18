@@ -80,7 +80,7 @@ CREATE TABLE Inventory (
 );
 
 -- Order Items
-CREATE TABLE order_items (
+CREATE TABLE Order_Items (
   id INT NOT NULL,
   order_id VARCHAR(50) NOT NULL,
   product_id VARCHAR(50) NOT NULL,

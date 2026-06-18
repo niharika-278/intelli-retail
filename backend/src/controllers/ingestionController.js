@@ -136,9 +136,10 @@ export async function ingestProducts(req, res) {
         catIds[cname] = id;
       }
       for (const r of toInsert) {
+        const productId = makeId('prd');
         await conn.execute(
-          'INSERT INTO Products (name, category_id, expiry_date) VALUES (?, ?, ?)',
-          [r.name, catIds[r.categoryName], r.expiry_date]
+          'INSERT INTO Products (id, name, category_id, expiry_date) VALUES (?, ?, ?, ?)',
+          [productId, r.name, catIds[r.categoryName], r.expiry_date]
         );
         processed++;
       }
@@ -181,8 +182,12 @@ export async function ingestSales(req, res) {
           total += unitPrice * it.quantity;
           withPrice.push({ ...it, price: unitPrice });
         }
-        const [ord] = await conn.execute('INSERT INTO Orders (customer_id, total_amount) VALUES (?, ?)', [customerId, total]);
-        const orderId = ord.insertId;
+        const orderId = makeId('ord');
+
+        await conn.execute(
+          'INSERT INTO Orders (id, customer_id, total_amount) VALUES (?, ?, ?)',
+          [orderId, customerId, total]
+        );
         for (const it of withPrice) {
           await conn.execute(
             'INSERT INTO Order_Items (order_id, product_id, seller_id, quantity, price) VALUES (?, ?, ?, ?, ?)',

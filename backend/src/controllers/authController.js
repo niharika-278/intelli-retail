@@ -16,9 +16,10 @@ export async function register(req, res) {
       return res.status(400).json({ success: false, message: 'Email already registered' });
     }
     const password_hash = await bcrypt.hash(password, config.bcryptRounds);
+    const id = makeId('usr');
     await pool.execute(
-      'INSERT INTO Users (name, email, password_hash, role) VALUES (?, ?, ?, ?)',
-      [name.trim(), email.trim().toLowerCase(), password_hash, role || 'seller']
+      'INSERT INTO Users (id, name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)',
+      [id, name.trim(), email.trim().toLowerCase(), password_hash, role || 'seller']
     );
     const [rows] = await pool.execute(
       'SELECT id, name, email, role FROM Users WHERE email = ?',

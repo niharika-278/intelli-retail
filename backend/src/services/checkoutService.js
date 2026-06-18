@@ -29,12 +29,11 @@ export async function placeOrder(conn, { customerId, items, sellerId }) {
     totalAmount += lineTotal;
     orderItems.push({ productId: item.productId, quantity: item.quantity, price });
   }
-
-  const [orderResult] = await conn.execute(
-    'INSERT INTO Orders (customer_id, total_amount) VALUES (?, ?)',
-    [customerId, totalAmount]
+  const orderId = makeId('ord');
+  await conn.execute(
+    'INSERT INTO Orders (id, customer_id, total_amount) VALUES (?, ?, ?)',
+    [orderId, customerId, totalAmount]
   );
-  const orderId = orderResult.insertId;
 
   for (const oi of orderItems) {
     await conn.execute(

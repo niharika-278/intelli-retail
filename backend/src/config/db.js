@@ -6,6 +6,7 @@ const pool = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME || 'retail_inventory',
   port: Number(process.env.DB_PORT) || 3306,
+  ssl: process.env.DB_SSL === 'true' ? { minVersion: 'TLSv1.2', rejectUnauthorized: true } : undefined,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
