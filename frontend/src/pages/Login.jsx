@@ -103,6 +103,17 @@ export default function Login() {
               Create account
             </Link>
           </p>
+
+          <div className="mt-6 border border-surface-200 rounded-lg bg-surface-50 p-4">
+            <p className="text-sm font-medium text-surface-700 mb-1">Demo Access</p>
+            <p className="text-sm text-surface-600">
+              Email: <span className="font-medium text-surface-900">admin@retail.com</span>{' '}
+              &nbsp;Password: <span className="font-medium text-surface-900">Admin@123</span>
+            </p>
+            <p className="text-xs text-surface-500 mt-2">
+              Use these credentials to explore the application.
+            </p>
+          </div>
         </div>
       </div>
     </div>

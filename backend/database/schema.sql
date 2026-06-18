@@ -1,5 +1,4 @@
--- Consumer Behaviour & Demand Forecasting System - MySQL Schema
--- Clean version aligned with dataset
+
 
 DROP DATABASE IF EXISTS retail_inventory;
 CREATE DATABASE retail_inventory;
