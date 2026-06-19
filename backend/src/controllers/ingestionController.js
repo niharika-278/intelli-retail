@@ -1,6 +1,7 @@
 import multer from 'multer';
 import { parse } from 'csv-parse/sync';
 import { transaction } from '../config/db.js';
+import { makeId } from '../utils/makeId.js';
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
 export const uploadMiddleware = upload.single('file');
@@ -53,9 +54,10 @@ export async function ingestCustomers(req, res) {
     }
     await transaction(async (conn) => {
       for (const r of toInsert) {
+        const customerId = makeId('cst');
         await conn.execute(
-          'INSERT INTO Customers (unique_id, name, email, zip_code, city, state) VALUES (?, ?, ?, ?, ?, ?)',
-          [r.unique_id, r.name, r.email, r.zip_code, r.city, r.state]
+          'INSERT INTO Customers (id, unique_id, name, email, zip_code, city, state) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [customerId, r.unique_id, r.name, r.email, r.zip_code, r.city, r.state]
         );
         processed++;
       }
@@ -79,7 +81,7 @@ export async function ingestInventory(req, res) {
     const toUpsert = [];
     for (const row of rows) {
       const r = cleanRow(row);
-      const productId = parseInt(r.product_id ?? r.Product_id, 10);
+      const productId = r.product_id ?? r.Product_id;
       const stock = parseInt(r.stock ?? r.Stock, 10);
       if (!productId || isNaN(stock) || stock < 0) { rejected++; continue; }
       toUpsert.push({ productId, stock });
@@ -163,8 +165,8 @@ export async function ingestSales(req, res) {
     const orders = new Map();
     for (const row of rows) {
       const r = cleanRow(row);
-      const customerId = parseInt(r.customer_id ?? r.customer_Id, 10);
-      const productId = parseInt(r.product_id ?? r.Product_id, 10);
+      const customerId = r.customer_id ?? r.customer_Id;
+      const productId = r.product_id ?? r.Product_id;
       const quantity = parseInt(r.quantity ?? r.Quantity, 10);
       const price = parseFloat(r.price ?? r.Price);
       const orderRef = r.order_id ?? r.Order_id ?? `${customerId}-${Date.now()}-${Math.random()}`;
@@ -188,10 +190,12 @@ export async function ingestSales(req, res) {
           'INSERT INTO Orders (id, customer_id, total_amount) VALUES (?, ?, ?)',
           [orderId, customerId, total]
         );
+        let itemIndex = 0;
         for (const it of withPrice) {
+          itemIndex += 1;
           await conn.execute(
-            'INSERT INTO Order_Items (order_id, product_id, seller_id, quantity, price) VALUES (?, ?, ?, ?, ?)',
-            [orderId, it.productId, sellerId, it.quantity, it.price]
+            'INSERT INTO Order_Items (id, order_id, product_id, seller_id, quantity, price) VALUES (?, ?, ?, ?, ?, ?)',
+            [itemIndex, orderId, it.productId, sellerId, it.quantity, it.price]
           );
           await conn.execute(
             'UPDATE Inventory SET stock = stock - ? WHERE product_id = ? AND seller_id = ?',
