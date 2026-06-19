@@ -48,10 +48,10 @@ export async function getDashboard(req, res) {
     );
 
     const [revenueTrend] = await pool.execute(
-      `SELECT DATE(o.created_at, '%Y-%m') AS date, SUM(o.total_amount) AS revenue
+      `SELECT DATE(o.created_at) AS date, SUM(o.total_amount) AS revenue
        FROM Orders o
        WHERE o.created_at >= '2017-11-01'
-       GROUP BY DATE_FORMAT(o.created_at, '%Y-%m')
+       GROUP BY DATE_FORMAT(o.created_at)
        ORDER BY date`
     );
 
