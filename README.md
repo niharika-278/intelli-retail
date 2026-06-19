@@ -81,7 +81,7 @@ node src/scripts/seedAdmin.js   # Creates admin@retail.com / Admin@123
 npm run dev
 ```
 
-Server runs at `http://localhost:5000`.
+Server runs at `https://intelli-retail.onrender.com`.
 
 ### 3. Frontend
 
@@ -90,7 +90,7 @@ cd frontend
 npm install
 npm run dev
 ```
-App runs at `http://localhost:5173` and proxies `/api` to the backend.
+App runs at `https://intelli-retail.vercel.app` and proxies `/api` to the backend.
 
 ## Default login
 
