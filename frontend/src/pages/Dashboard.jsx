@@ -141,7 +141,7 @@ export default function Dashboard() {
               <BarChart data={salesByDay || []} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDate} interval={4} />
-                <YAxis domain={[0, 4000]}tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}`} />
+                <YAxis domain={[0, 2500]}tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}`} />
                 <Tooltip formatter={(v) => [`₹${Number(v).toLocaleString('en-IN')}`, 'Amount']} labelFormatter={(v) => `Date: ${formatDate(v)}`} />
                 <Bar dataKey="amount" fill="#22c55e" radius={[4, 4, 0, 0]} name="Sales" />
               </BarChart>
@@ -161,7 +161,7 @@ export default function Dashboard() {
             <LineChart data={revenueTrend || []} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
               <XAxis dataKey="date" tick={{ fontSize: 11 }} tickFormatter={formatDate} />
-              <YAxis domain={[0, 4000]} tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}`} />
+              <YAxis domain={[0, 2500]} tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v}`} />
               <Tooltip formatter={(v) => [`₹${Number(v).toLocaleString('en-IN')}`, 'Revenue']} labelFormatter={(v) => `Date: ${formatDate(v)}`} />
               <Line type="monotone" dataKey="revenue" stroke="#22c55e" strokeWidth={2} dot={{ r: 3 }} name="Revenue" />
             </LineChart>
