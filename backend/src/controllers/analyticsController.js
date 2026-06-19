@@ -35,7 +35,8 @@ export async function getDashboard(req, res) {
    JOIN Products p ON p.category_id = c.id
    JOIN Order_Items oi ON oi.product_id = p.id
    GROUP BY c.id, c.name
-   ORDER BY total DESC`
+   ORDER BY total DESC
+   LIMIT 7`
     );
 
     const [salesByDay] = await pool.execute(
