@@ -42,16 +42,16 @@ export async function getDashboard(req, res) {
     const [salesByDay] = await pool.execute(
       `SELECT DATE(o.created_at) AS date, SUM(o.total_amount) AS amount, COUNT(o.id) AS orders
        FROM Orders o
-       WHERE o.created_at >= DATE_SUB((SELECT MAX(created_at) FROM Orders), INTERVAL 4 MONTH)
+       WHERE o.created_at >= DATE_SUB((SELECT MAX(created_at) FROM Orders), INTERVAL 90 DAY)
        GROUP BY DATE(o.created_at)
        ORDER BY date`
     );
 
     const [revenueTrend] = await pool.execute(
-      `SELECT DATE(o.created_at) AS date, SUM(o.total_amount) AS revenue
+      `SELECT DATE(o.created_at, '%Y-%m') AS date, SUM(o.total_amount) AS revenue
        FROM Orders o
-       WHERE o.created_at >= '2017-01-01'
-       GROUP BY DATE(o.created_at)
+       WHERE o.created_at >= '2017-11-01'
+       GROUP BY DATE_FORMAT(o.created_at, '%Y-%m')
        ORDER BY date`
     );
 
