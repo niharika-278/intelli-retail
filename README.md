@@ -3,6 +3,7 @@
 
 Role-based retail management platform with JWT auth, inventory, checkout, CSV ingestion, and analytics.
 
+> **Note:** This project is not currently mobile-responsive. Please use a desktop or laptop device for the intended user experience.
 ## Tech stack
 
 - **Frontend:** React (Vite), Tailwind CSS, Recharts, React Router, Axios
