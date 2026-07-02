@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { checkoutApi } from '../services/api';
 import { showToast } from '../components/Toast';
+import BentoGrid from '../components/BentoGrid';
+import BentoCard from '../components/BentoCard';
 
 const TAX_RATE = 0.05;
 
@@ -36,9 +39,9 @@ function AddCustomerModal({ onClose, onAdded }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface-900/50" onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-lg font-semibold text-surface-900 mb-4">Add new customer</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-white rounded-bento-lg shadow-bento max-w-md w-full p-6" onClick={(e) => e.stopPropagation()}>
+        <h2 className="font-display text-lg font-bold text-ink mb-4">Add new customer</h2>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
             <label className="block text-sm font-medium text-surface-700 mb-1">Name *</label>
@@ -94,7 +97,7 @@ function AddCustomerModal({ onClose, onAdded }) {
             <button type="button" onClick={onClose} className="flex-1 py-2 border border-surface-200 rounded-lg font-medium text-surface-700 hover:bg-surface-50">
               Cancel
             </button>
-            <button type="submit" disabled={loading} className="flex-1 py-2 bg-surface-900 text-white rounded-lg font-medium hover:bg-surface-800 disabled:opacity-50">
+            <button type="submit" disabled={loading} className="flex-1 py-2.5 bg-ink text-white rounded-full font-medium hover:bg-ink/90 disabled:opacity-50">
               {loading ? 'Adding…' : 'Add customer'}
             </button>
           </div>
@@ -202,16 +205,23 @@ export default function Checkout() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-surface-900">Checkout</h1>
-        <p className="text-surface-500 mt-0.5">POS – select customer, add products, complete order</p>
-      </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-bento-lg"
+    >
+      <BentoGrid>
+        <BentoCard span="full" variant="coral" emphasis className="!col-span-full">
+          <h1 className="font-display text-3xl font-bold tracking-tight">Checkout</h1>
+          <p className="mt-1 opacity-80">POS – select customer, add products, complete order</p>
+        </BentoCard>
+      </BentoGrid>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white rounded-xl border border-surface-200 shadow-card p-5">
-            <h2 className="text-sm font-semibold text-surface-900 mb-3">Customer</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-bento-lg">
+        <div className="lg:col-span-2 space-y-bento-lg">
+          <BentoCard variant="glass" noMotion className="shadow-bento">
+            <h2 className="text-md font-bold text-ink mb-3">Customer</h2>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -224,32 +234,32 @@ export default function Checkout() {
               <button
                 type="button"
                 onClick={() => setShowAddCustomer(true)}
-                className="px-4 py-2 border border-surface-200 rounded-lg font-medium text-surface-700 hover:bg-surface-50"
+                className="px-4 py-2 border border-black/[0.08] rounded-full font-medium text-ink/70 hover:bg-black/[0.04]"
               >
                 New customer
               </button>
             </div>
             {selectedCustomer && (
-              <p className="mt-2 text-sm text-surface-600">
+              <p className="mt-2 text-sm text-ink/60">
                 Selected: <strong>{selectedCustomer.name}</strong> {selectedCustomer.email && `(${selectedCustomer.email})`}
               </p>
             )}
-            <ul className="mt-2 max-h-40 overflow-y-auto border border-surface-100 rounded-lg divide-y divide-surface-100">
+            <ul className="mt-2 max-h-40 overflow-y-auto border border-black/[0.06] rounded-bento divide-y divide-black/[0.06]">
               {customers.map((c) => (
                 <li
                   key={c.id}
                   onClick={() => { setSelectedCustomer(c); setCustomerSearch(''); setCustomers([]); }}
-                  className={`px-3 py-2 text-sm cursor-pointer hover:bg-surface-50 ${selectedCustomer?.id === c.id ? 'bg-primary-50 text-primary-800' : 'text-surface-700'}`}
+                  className={`px-3 py-2 text-sm cursor-pointer hover:bg-violet/10 ${selectedCustomer?.id === c.id ? 'bg-violet/15 text-violet-dark font-medium' : 'text-ink/70'}`}
                 >
                   {c.name} {c.email && ` · ${c.email}`}
                 </li>
               ))}
-              {customers.length === 0 && !customerSearch && <li className="px-3 py-2 text-sm text-surface-400">Search or add a customer</li>}
+              {customers.length === 0 && !customerSearch && <li className="px-3 py-2 text-sm text-ink/40">Search or add a customer</li>}
             </ul>
-          </div>
+          </BentoCard>
 
-          <div className="bg-white rounded-xl border border-surface-200 shadow-card p-5">
-            <h2 className="text-sm font-semibold text-surface-900 mb-3">Products</h2>
+          <BentoCard variant="glass" noMotion className="shadow-bento">
+            <h2 className="text-md font-bold text-ink mb-3">Products</h2>
             <input
               type="text"
               value={productSearch}
@@ -269,23 +279,23 @@ export default function Checkout() {
                       type="button"
                       onClick={() => addToCart(p)}
                       disabled={(p.stock ?? 0) < 1}
-                      className="text-sm font-medium text-primary-600 hover:text-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="text-sm font-medium text-violet hover:text-violet-dark disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Add
                     </button>
                   </li>
                 ))}
-                {products.length === 0 && <li className="text-sm text-surface-400">No products found</li>}
+                {products.length === 0 && <li className="text-sm text-ink/40">No products found</li>}
               </ul>
             )}
-          </div>
+          </BentoCard>
         </div>
 
-        <div className="bg-white rounded-xl border border-surface-200 shadow-card p-5 h-fit">
-          <h2 className="text-sm font-semibold text-surface-900 mb-3">Order summary</h2>
+        <BentoCard variant="lightpink" noMotion className="shadow-bento h-fit">
+          <h2 className="text-md font-bold mb-5">Order summary</h2>
           <ul className="space-y-2 mb-4 max-h-48 overflow-y-auto">
             {cart.map((c) => (
-              <li key={c.id} className="flex items-center justify-between text-sm">
+              <li key={c.id} className="flex items-center justify-between text-md">
                 <div className="flex items-center gap-2">
                   <span className="text-surface-800">{c.name}</span>
                   <button type="button" onClick={() => updateCartQty(c.id, -1)} className="w-6 h-6 rounded border border-surface-200 hover:bg-surface-100">−</button>
@@ -307,11 +317,11 @@ export default function Checkout() {
             type="button"
             onClick={placeOrder}
             disabled={loadingOrders || !selectedCustomer || cart.length === 0}
-            className="w-full mt-4 py-3 bg-surface-900 text-white rounded-lg font-medium hover:bg-surface-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-250"
+            className="w-full mt-4 py-3 bg-coral text-ink rounded-full font-semibold hover:bg-coral-light disabled:opacity-80 disabled:cursor-not-allowed transition-colors"
           >
             {loadingOrders ? 'Placing order…' : 'Complete order'}
           </button>
-        </div>
+        </BentoCard>
       </div>
 
       {showAddCustomer && (
@@ -320,6 +330,6 @@ export default function Checkout() {
           onAdded={(newCustomer) => { setSelectedCustomer(newCustomer); loadCustomers(); }}
         />
       )}
-    </div>
+    </motion.div>
   );
 }

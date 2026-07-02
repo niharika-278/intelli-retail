@@ -3,10 +3,38 @@
 @tailwind utilities;
 
 body {
-  @apply bg-surface-50 text-surface-900 font-sans antialiased;
+  @apply bg-canvas text-ink font-sans antialiased;
 }
 
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-* {
-  @apply transition-colors duration-200;
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.gradient-mesh {
+  background: linear-gradient(
+    135deg,
+    #f7f5f0 0%,
+    rgba(139, 92, 246, 0.08) 35%,
+    rgba(255, 107, 74, 0.1) 70%,
+    #f7f5f0 100%
+  );
+  background-size: 200% 200%;
+  animation: gradient-shift 18s ease infinite;
 }

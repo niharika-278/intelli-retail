@@ -1,6 +1,9 @@
 import { useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { ingestionApi } from '../services/api';
 import { showToast } from '../components/Toast';
+import BentoGrid from '../components/BentoGrid';
+import BentoCard from '../components/BentoCard';
 
 const TABS = [
   { id: 'customers', label: 'Customers', upload: ingestionApi.uploadCustomers },
@@ -65,20 +68,28 @@ export default function DataIngestion() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-surface-900">Data ingestion</h1>
-        <p className="text-surface-500 mt-0.5">Upload CSV files for customers, inventory, or sales</p>
-      </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-bento-lg"
+    >
+      <BentoGrid>
+        <BentoCard span="full" variant="sun" emphasis className="!col-span-full">
+          <h1 className="font-display text-3xl font-bold tracking-tight">Data ingestion</h1>
+          <p className="mt-1 opacity-70">Upload CSV files for customers, inventory, or sales</p>
+        </BentoCard>
+      </BentoGrid>
 
-      <div className="flex gap-2 border-b border-surface-200">
+      <BentoCard variant="glass" noMotion className="shadow-bento">
+      <div className="flex flex-wrap gap-2 mb-6">
         {TABS.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => { setActiveTab(t.id); setFile(null); setResult(null); }}
-            className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors duration-250 ${
-              activeTab === t.id ? 'bg-white border border-b-0 border-surface-200 text-surface-900 -mb-px' : 'text-surface-600 hover:text-surface-900'
+            className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
+              activeTab === t.id ? 'bg-ink text-white' : 'text-ink/60 hover:bg-black/[0.04] hover:text-ink'
             }`}
           >
             {t.label}
@@ -86,13 +97,13 @@ export default function DataIngestion() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-surface-200 shadow-card p-6">
+      <div>
         <div
           onDrop={onDrop}
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
-          className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors duration-250 ${
-            drag ? 'border-primary-500 bg-primary-50' : 'border-surface-200 bg-surface-50'
+          className={`border-2 border-dashed rounded-bento p-10 text-center transition-colors duration-250 ${
+            drag ? 'border-violet bg-violet/10' : 'border-black/[0.08] bg-black/[0.02]'
           }`}
         >
           <input
@@ -103,19 +114,19 @@ export default function DataIngestion() {
             onChange={(e) => onDrop(e)}
           />
           <label htmlFor="csv-upload" className="cursor-pointer block">
-            <p className="text-surface-600 mb-1">Drag & drop a CSV file here, or click to browse</p>
-            <p className="text-sm text-surface-400">Accepted: .csv only</p>
+            <p className="text-ink/60 mb-1">Drag & drop a CSV file here, or click to browse</p>
+            <p className="text-sm text-ink/40">Accepted: .csv only</p>
           </label>
         </div>
 
         {file && (
           <div className="mt-4 flex items-center justify-between gap-4">
-            <span className="text-sm text-surface-600 truncate">{file.name}</span>
+            <span className="text-sm text-ink/60 truncate">{file.name}</span>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={clearFile}
-                className="text-sm text-surface-500 hover:text-surface-700"
+                className="text-sm text-ink/50 hover:text-ink"
               >
                 Clear
               </button>
@@ -123,7 +134,7 @@ export default function DataIngestion() {
                 type="button"
                 onClick={handleUpload}
                 disabled={loading}
-                className="px-4 py-2 bg-surface-900 text-white text-sm font-medium rounded-lg hover:bg-surface-800 disabled:opacity-50"
+                className="px-5 py-2 bg-ink text-white text-sm font-medium rounded-full hover:bg-ink/90 disabled:opacity-50"
               >
                 {loading ? 'Uploading…' : 'Upload'}
               </button>
@@ -132,15 +143,15 @@ export default function DataIngestion() {
         )}
 
         {loading && (
-          <div className="mt-4 h-1.5 bg-surface-200 rounded-full overflow-hidden">
-            <div className="h-full bg-primary-500 rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
+          <div className="mt-4 h-1.5 bg-black/[0.06] rounded-full overflow-hidden">
+            <div className="h-full bg-violet rounded-full transition-all duration-300" style={{ width: `${progress}%` }} />
           </div>
         )}
 
         {result?.summary && (
-          <div className="mt-6 p-4 bg-surface-50 rounded-lg border border-surface-200">
-            <h3 className="text-sm font-semibold text-surface-900 mb-2">Ingestion summary</h3>
-            <ul className="text-sm text-surface-600 space-y-1">
+          <div className="mt-6 p-4 bg-neon/20 rounded-bento border border-black/[0.06]">
+            <h3 className="text-sm font-semibold text-ink mb-2">Ingestion summary</h3>
+            <ul className="text-sm text-ink/70 space-y-1">
               <li>Processed: {result.summary.processed}</li>
               <li>Rejected: {result.summary.rejected}</li>
               {result.summary.cleaned != null && <li>Cleaned: {result.summary.cleaned}</li>}
@@ -151,20 +162,20 @@ export default function DataIngestion() {
 
         {result?.preview && Array.isArray(result.preview) && result.preview.length > 0 && (
           <div className="mt-4 overflow-x-auto">
-            <h3 className="text-sm font-semibold text-surface-900 mb-2">Preview</h3>
-            <table className="w-full text-sm border border-surface-200 rounded-lg overflow-hidden">
-              <thead className="bg-surface-100">
+            <h3 className="text-sm font-semibold text-ink mb-2">Preview</h3>
+            <table className="w-full text-sm border border-black/[0.08] rounded-bento overflow-hidden">
+              <thead className="bg-black/[0.04]">
                 <tr>
                   {Object.keys(result.preview[0]).map((k) => (
-                    <th key={k} className="text-left px-3 py-2 font-medium text-surface-700">{k}</th>
+                    <th key={k} className="text-left px-3 py-2 font-medium text-ink/80">{k}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {result.preview.slice(0, 5).map((row, i) => (
-                  <tr key={i} className="border-t border-surface-200">
+                  <tr key={i} className="border-t border-black/[0.06]">
                     {Object.values(row).map((v, j) => (
-                      <td key={j} className="px-3 py-2 text-surface-600">{String(v ?? '')}</td>
+                      <td key={j} className="px-3 py-2 text-ink/60">{String(v ?? '')}</td>
                     ))}
                   </tr>
                 ))}
@@ -173,6 +184,7 @@ export default function DataIngestion() {
           </div>
         )}
       </div>
-    </div>
+      </BentoCard>
+    </motion.div>
   );
 }
