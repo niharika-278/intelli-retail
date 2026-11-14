@@ -1,5 +1,5 @@
 import { transaction } from '../config/db.js';
-
+import { makeId } from '../utils/makeId.js';
 export async function placeOrder(conn, { customerId, items, sellerId }) {
   let totalAmount = 0;
   const orderItems = [];

@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import config from '../config/index.js';
 import pool from '../config/db.js';
+import { makeId } from '../utils/makeId.js';
 
 function signToken(id) {
   return jwt.sign({ id }, config.jwt.secret, { expiresIn: config.jwt.expire });
