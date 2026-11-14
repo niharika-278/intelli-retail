@@ -22,7 +22,7 @@ const customerValidations = [
 router.post('/customers', validate(customerValidations), checkoutController.createCustomer);
 router.get('/products', checkoutController.getProducts);
 const orderValidations = [
-  body('customerId').isInt().withMessage('Valid customerId required'),
+  body('customerId').withMessage('Valid customerId required'),
   body('items').isArray({ min: 1 }).withMessage('At least one item required'),
   body('items.*.productId').isInt().withMessage('Valid productId required'),
   body('items.*.quantity').isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
